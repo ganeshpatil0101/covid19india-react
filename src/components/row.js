@@ -5,8 +5,6 @@ let populationByState = require('./populationByState');
 function Row(props) {
   const [state, setState] = useState(props.state);
   const [districts, setDistricts] = useState(props.districts);
-  const [reveal, setReveal] = useState(false);
-  const [population] = useState(populationByState)
   useEffect(()=>{
     setState(props.state);
   }, [props.state]);
@@ -20,7 +18,7 @@ function Row(props) {
   }, [districts]);
 
   const handleReveal = () => {
-    setReveal(!reveal);
+    props.handleReveal(props.state.state);
   };
 
   const sort = (aDistricts) => {
@@ -29,13 +27,14 @@ function Row(props) {
 
   return (
     <React.Fragment>
-      <span className={`dropdown ${reveal ? 'rotateRightDown' : 'rotateDownRight' }`} style={{display: !props.total ? '' : 'none'}} onClick={()=>{
+      <span className={`dropdown ${props.reveal ? 'rotateRightDown' : 'rotateDownRight' }`} style={{display: !props.total ? '' : 'none'}} onClick={()=>{
         handleReveal();
       }}>
         <Icon.ChevronDown/>
       </span>
       <tr className={props.total ? 'state is-total' : 'state'} className={props.total ? 'is-total' : ''}
         onMouseEnter={() => props.onHighlightState?.(state, props.index)}
+        onMouseLeave={() => props.onHighlightState?.()}
         touchstart={() => props.onHighlightState?.(state, props.index)}
         onClick={()=>{
           handleReveal();
@@ -74,13 +73,13 @@ function Row(props) {
 		</td>
       </tr>
 
-      <tr className={`spacer`} style={{display: reveal && !props.total ? '' : 'none'}}>
+      <tr className={`spacer`} style={{display: props.reveal && !props.total ? '' : 'none'}}>
         <td></td>
         <td></td>
         <td></td>
       </tr>
 
-      <tr className={`district-heading`} style={{display: reveal && !props.total ? '' : 'none'}}>
+      <tr className={`district-heading`} style={{display: props.reveal && !props.total ? '' : 'none'}}>
         <td>District</td>
         <td><abbr className={`${window.innerWidth <=769 ? 'is-cherry' : ''}`} title="Confirmed">{window.innerWidth <=769 ? window.innerWidth <=375 ? 'Confirmed' : 'Confirmed' : 'Confirmed'}</abbr></td>
          {/*<td><abbr className={`${window.innerWidth <=769 ? 'is-blue' : ''}`} title="Active">{window.innerWidth <=769 ? window.innerWidth <=375 ? 'A' : 'Actv' : 'Active'}</abbr></td>
@@ -89,7 +88,7 @@ function Row(props) {
       </tr>
 
       {districts?.Unknown &&
-      <tr className={`district`} style={{display: reveal && !props.total ? '' : 'none'}}>
+      <tr className={`district`} style={{display: props.reveal && !props.total ? '' : 'none'}}>
         <td style={{fontWeight: 600}}>Unknown</td>
         <td>{districts['Unknown'].confirmed}</td>
          {/*<td>{districts['Unknown'].active}</td>
@@ -102,7 +101,7 @@ function Row(props) {
         Object.keys(districts ? districts : {}).map((district, index) => {
           if (district.toLowerCase()!=='unknown') {
             return (
-              <tr key={index} className={`district`} style={{display: reveal && !props.total ? '' : 'none'}}>
+              <tr key={index} className={`district`} style={{display: props.reveal && !props.total ? '' : 'none'}}>
                 <td style={{fontWeight: 600}}>{district}</td>
                 <td>{districts[district].confirmed}</td>
                  {/*<td>{districts[district].active}</td>
@@ -114,7 +113,7 @@ function Row(props) {
         })
       }
 
-      <tr className={`spacer`} style={{display: reveal && !props.total ? '' : 'none'}}>
+      <tr className={`spacer`} style={{display: props.reveal && !props.total ? '' : 'none'}}>
         <td></td>
         <td></td>
         <td></td>
